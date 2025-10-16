@@ -1,0 +1,53 @@
+# Core Dependencies
+torch>=2.0.0,<2.5.0
+transformers>=4.30.0,<4.46.0
+
+# Audio Processing (Python 3.13 compatible)
+pyaudio>=0.2.13
+pygame>=2.5.0
+SpeechRecognition>=3.10.0
+
+# Speech-to-Text (Whisper)
+faster-whisper>=1.0.0,<1.1.0
+
+# Text-to-Speech
+edge-tts>=6.1.0,<7.0.0
+
+# LLM Integration
+ollama>=0.1.0
+
+# Data Processing
+numpy>=1.24.0,<2.0.0
+
+# System packages required (install via OS package manager):
+# Ubuntu/Debian:
+#   sudo apt-get install portaudio19-dev python3-pyaudio ffmpeg
+# macOS:
+#   brew install portaudio ffmpeg
+# Windows:
+#   Download PyAudio wheel from: https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyaudio
+
+# Optional: For GPU acceleration (NVIDIA only)
+# torch>=2.0.0+cu118
+# Install from: https://pytorch.org/get-started/locally/
+
+# External Requirements:
+# - Ollama must be installed separately (https://ollama.ai)
+# - Run: ollama pull llama3.2
+
+# System packages required (install via OS package manager):
+# Ubuntu/Debian:
+#   sudo apt-get install portaudio19-dev python3-pyaudio ffmpeg
+# macOS:
+#   brew install portaudio ffmpeg
+# Windows:
+#   Download PyAudio wheel from: https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyaudio
+#   pip install PyAudio‑0.2.13‑cp311‑cp311‑win_amd64.whl
+
+# Optional: For GPU acceleration (NVIDIA only)
+# torch>=2.0.0+cu118  # CUDA 11.8
+# Install from: https://pytorch.org/get-started/locally/
+
+# Note: Ollama must be installed separately
+# Download from: https://ollama.ai
+# Then run: ollama pull llama3.2
