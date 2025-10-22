@@ -19,6 +19,10 @@ ollama>=0.1.0
 # Data Processing
 numpy>=1.24.0,<2.0.0
 
+# Agent System Dependencies
+requests>=2.31.0  # For web fetching
+urllib3>=2.0.0    # URL parsing and validation
+
 # System packages required (install via OS package manager):
 # Ubuntu/Debian:
 #   sudo apt-get install portaudio19-dev python3-pyaudio ffmpeg
