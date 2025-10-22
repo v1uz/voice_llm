@@ -95,8 +95,13 @@ class AIAgent:
         self.memory.add_observation(f"New task: {task_description}", importance=8)
 
         try:
+            # Auto-detect if task is simple enough for direct execution
             if use_planning and self.enable_planning:
-                return self._execute_with_planning(task_description)
+                if self._is_simple_task(task_description):
+                    logger.info("💡 Task is simple, using direct execution")
+                    return self._execute_direct(task_description)
+                else:
+                    return self._execute_with_planning(task_description)
             else:
                 return self._execute_direct(task_description)
 
@@ -107,6 +112,59 @@ class AIAgent:
                 'output': None,
                 'error': str(e)
             }
+
+    def _is_simple_task(self, task: str) -> bool:
+        """
+        Determine if a task is simple enough for direct execution without planning
+
+        Simple tasks are single-action tasks like:
+        - Open a website
+        - Search for something
+        - Create a single file
+        - Read a file
+        - Get system info
+        """
+        task_lower = task.lower()
+
+        # Single action keywords
+        simple_patterns = [
+            # Web operations
+            ('open', 'website'),
+            ('open', '.com'),
+            ('open', '.org'),
+            ('browse', 'to'),
+            ('go to', ''),
+            ('visit', ''),
+
+            # Search operations
+            ('search', 'for'),
+            ('search', 'google'),
+            ('search', 'youtube'),
+            ('find', 'on'),
+            ('look up', ''),
+
+            # File operations (single file)
+            ('create', 'file'),
+            ('write', 'to'),
+            ('read', 'file'),
+            ('open', 'file'),
+
+            # System operations
+            ('get', 'system'),
+            ('show', 'system'),
+            ('launch', ''),
+            ('start', ''),
+        ]
+
+        # Check if matches simple pattern
+        for pattern in simple_patterns:
+            if all(word in task_lower for word in pattern if word):
+                # Additional check: no "and", "then", "after" suggesting multiple steps
+                complex_indicators = ['and then', 'after that', 'then create', 'and also', 'followed by']
+                if not any(indicator in task_lower for indicator in complex_indicators):
+                    return True
+
+        return False
 
     def _execute_with_planning(self, task_description: str) -> Dict[str, Any]:
         """Execute task using planning system"""

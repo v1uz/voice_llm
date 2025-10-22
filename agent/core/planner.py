@@ -118,30 +118,72 @@ class TaskPlanner:
         # Build prompt for LLM
         tools_list = "\n".join([f"- {tool}" for tool in available_tools])
 
-        prompt = f"""You are an AI task planner. Break down this goal into specific, executable steps.
+        prompt = f"""You are an AI task planner. Break down this goal into SIMPLE, executable steps.
 
 GOAL: {goal}
 
 AVAILABLE TOOLS:
 {tools_list}
 
-Create a step-by-step plan. For each step, specify:
-1. Clear description of what to do
-2. Which tool to use (if applicable)
-3. Parameters for the tool (if applicable)
+IMPORTANT RULES:
+1. Keep plans SIMPLE - don't overcomplicate
+2. For file operations, use FileWriteTool with filepath and content params
+3. For web operations, use WebBrowserTool with url param or WebSearchTool with query param
+4. Always provide complete parameters, never empty {{}}
+5. Most tasks need only 1-2 steps, not 8!
 
-Format your response as a JSON array of steps:
+EXAMPLES:
+
+Example 1 - Create file with content:
+Goal: "Create a file todo.txt with task list"
+Plan:
 [
   {{
-    "description": "Clear description of step",
-    "tool": "tool_name or null",
-    "params": {{"param1": "value1"}}
-  }},
-  ...
+    "description": "Create file todo.txt with the task list content",
+    "tool": "filewritetool",
+    "params": {{"filepath": "todo.txt", "content": "Task 1\\nTask 2\\nTask 3"}}
+  }}
 ]
 
-Keep the plan simple and executable. Each step should be atomic and achievable.
-Response must be valid JSON only, no additional text.
+Example 2 - Open website:
+Goal: "Open google.com"
+Plan:
+[
+  {{
+    "description": "Open google.com in browser",
+    "tool": "webbrowsertool",
+    "params": {{"url": "google.com"}}
+  }}
+]
+
+Example 3 - Search web:
+Goal: "Search for Python tutorials"
+Plan:
+[
+  {{
+    "description": "Search Google for Python tutorials",
+    "tool": "websearchtool",
+    "params": {{"query": "Python tutorials"}}
+  }}
+]
+
+Example 4 - Read and process:
+Goal: "Read data.txt and create summary"
+Plan:
+[
+  {{
+    "description": "Read the content of data.txt",
+    "tool": "filereadtool",
+    "params": {{"filepath": "data.txt"}}
+  }},
+  {{
+    "description": "Create summary.txt with analyzed content",
+    "tool": "filewritetool",
+    "params": {{"filepath": "summary.txt", "content": "Summary will be generated based on data.txt content"}}
+  }}
+]
+
+Now create a plan for the goal. Response must be ONLY valid JSON array, no markdown, no explanation.
 """
 
         try:
@@ -202,6 +244,9 @@ Response must be valid JSON only, no additional text.
 
     def _extract_json(self, text: str) -> str:
         """Extract JSON from text that might contain markdown or other content"""
+        # Remove markdown code blocks
+        text = text.replace('```json', '').replace('```', '').strip()
+
         # Try to find JSON array
         start = text.find('[')
         end = text.rfind(']')
